@@ -1,86 +1,141 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ImagePreview from "./ImagePreview";
+import Post from "./Post";
+
+
 
 function Content() {
-  const [message, setMessage] = useState("");
+  const [allData, setAllData] = useState("");
+  const [ file, setFile ] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [formData, setFormData] = useState({
     title:"",
+    user:"",
+    text:"",
+    img_path:null,
   })
 
   const handleChange = (e) => {
-    console.log("e.target.name = ", e.target.name)
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     })
-
-     console.log("formData: ", formData)
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // this prevents the page from loading after user submits. I took this out so that I can intentionally have the  page refresh.
+    console.log("useState for file  = ", file)
+    
+    
+    const uploadData = new FormData();
+    console.log("uploadData = ", uploadData)
+    uploadData.append('title', formData.title);
+    uploadData.append('description', formData.text);
+    uploadData.append('user', formData.user);
+    uploadData.append('file', file); // assuming you saved it in useState
 
+    for (const pair of uploadData.entries()) {
+  console.log(`${pair[0]}:`, pair[1]);
+}
 
-    axios
-      .get("http://localhost:4000/api/submit")
-      .then((response) => setMessage(response.data.formData))
-      .catch((error) => console.error("Error fetching message: ", error));
+console.log("uploadData = ", uploadData)
 
-
-    // try{
-    //   const response = await axios.post('/api/submit', formData);
-    //   console.log("Response data sent succesfully!", response.data)
-    // }catch(error){
-    //   console.log("Unable to send data due to error: ", error)
-    // }
+    try{
+      await axios.post('http://localhost:4000/api/submit', uploadData,{
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }
+        
+      );
+      // console.log("Response data sent succesfully!", response.data)
+    }catch(error){
+      console.log("Unable to send data due to error: ", error)
+    }
   };
 
-
-
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/message")
-      .then((response) => setMessage(response.data.message))
-      .catch((error) => console.error("Error fetching message: ", error));
-  });
+      const fetchData = async() => {
+        try{
+          const response = await axios.get("http://localhost:4000/api/getData");
+          setAllData(response.data)
+        }catch(err){
+          throw err
+        }
+      }
+      
+      fetchData();
+  }, []);
 
-  function handleFileInput(e) {
-    const file = e.target.files[0];
+  if(!allData){
+    return <div>Loading...</div>
+  }
 
-    if (!file) {
+
+  async function handleFileInput(e) {
+    const fileInput = e.target.files[0]; //capture user's file input
+    console.log("fileInput = ", fileInput)
+    setFile(fileInput);
+    
+    //file input validation check
+    if (!fileInput) {
       console.log("No file selected. Please choose a file.", "error");
       return;
     } else {
       console.log("file selected");
     }
 
+    //temporarily read the contents of the user's file input
     const reader = new FileReader();
 
+    //console.log("file = ", file);
+    reader.readAsDataURL(fileInput); //read file as a URL
+
     reader.onload = () => {
-      setSelectedImage(reader.result);
+      setSelectedImage(reader.result); // allows us to use state to preview user's file input brieflyt
     };
-    console.log("file = ", file);
-    reader.readAsDataURL(file);
+    
   }
 
   return (
     <div className="flex flex-col items-center justify-center ">
-      { <p className="">{message}</p> }
-      <form onSubmit={handleSubmit} className="flex items-center gap-[20px]">
-        <div className=" ">
+      
+      { allData.map((item, index) => 
+        
+        <Post 
+          key={index}
+          user={item.usernames}
+          img_pth={item.image_path}
+          data={allData}
+        />
+      //  make sure you pass this to src : http://localhost:3000/uploads/827b3a1542c05ee4b0f13143a6d04cab.jpg
+        
+      )}
+
+      
+
+
+
+      { <form 
+        onSubmit={handleSubmit} 
+        className="flex items-center gap-[20px] "
+        style={{ visibility: allData.length == 0 ? 'visible' : 'hidden' }}
+        >
+        <div className="">
           <div className="flex justify-between gap-[8px] mb-2 w-full ">
             <input
+              name="title"
               className="text-black w-full bg-[#697565] p-3 rounded-md"
               type="text"
               placeholder="Post Title"
               onChange={handleChange}
             />
             <input
+              name="user"
               className="text-black w-full bg-[#697565] p-3 rounded-md"
               type="text"
               placeholder="Username"
+              onChange={handleChange}
+              required
             />
           </div>
 
@@ -89,8 +144,10 @@ function Content() {
          
           <div className="mb-2 w-full h-full">
             <textarea
+              name="text"
               className="text-black max-h-80 w-full mb-1 bg-[#697565]  p-5 rounded-md"
               placeholder="Post description..."
+              onChange={handleChange}
             ></textarea>
 
             <div className="flex justify-end">
@@ -114,6 +171,7 @@ function Content() {
           >
             Insert Image
             <input
+              name="img_path"
               id="inputFile"
               type="file"
               onChange={handleFileInput}
@@ -123,6 +181,7 @@ function Content() {
 
           {/* <img src={selectedImage}/> */}
           <div>
+            
             {selectedImage ? (
               <ImagePreview 
               passImage={selectedImage}
@@ -135,7 +194,9 @@ function Content() {
             )}
           </div>
         </div>
-      </form>
+      </form> }
+
+      
     </div>
   );
 }
