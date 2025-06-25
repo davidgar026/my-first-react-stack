@@ -6,7 +6,7 @@ import Content from "./Content";
 function App() {
 
   return (
-      <div className="grid grid-rows-[80px_1fr_60px] min-h-screen bg-[#183B4E]">
+      <div className="grid grid-rows-[80px_1fr_60px] sm:min-h-screen bg-[#F2EFE7]">
           <Header />
           <Content />
           <Footer />
