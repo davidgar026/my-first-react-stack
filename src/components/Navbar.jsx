@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import About from "./About";
-import AddPost from "./AddPost";
+import Form from "./Form";
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
@@ -30,7 +30,7 @@ function Navbar() {
         <Link className="p-5" to="/about">About</Link>
       </nav>
       <Routes>
-        <Route path="/add" element={<AddPost />}></Route>
+        <Route path="/add" element={<Form />}></Route>
         <Route path="/about" element={<About />} />
       </Routes>
       
