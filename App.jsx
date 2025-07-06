@@ -67,6 +67,12 @@ function App() {
               </>
             }
           />
+          <Route 
+            path="/add"
+            element={
+              <Form />
+            }
+          />
         </Routes>
 
         <div className="grid col-span-2">
