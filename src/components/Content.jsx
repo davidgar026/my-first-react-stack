@@ -95,10 +95,11 @@ function Content() {
         allData.map((item, index) => (
           <Post
             key={index}
+            title={item.title}
             user={item.usernames}
             img_pth={item.image_path}
             data={allData}
-            text={item.description}
+            text={item.text}
           />
         ))
       ) : (
