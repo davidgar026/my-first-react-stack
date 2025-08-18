@@ -25,7 +25,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="text-[#000000] text-xl flex justify-center md:justify-end items-center gap-6 px-6 py-3">
+      <nav className="text-[#000000] text-xl flex justify-center md:justify-end items-center gap-6 px-6 py-3 ">
         {/* {allData.length == 0  && <Link to="/add">Add</Link>} */}
         {<Link to="/add">Add</Link>}
         <Link className="p-5" to="/home">Home</Link>

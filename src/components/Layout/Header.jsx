@@ -15,32 +15,46 @@ export default function Header() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
-  
+
 return (
-    <header className="grid grid-cols-2 grid-rows-1">
+    <header className="grid w-full col-span-2 grid-cols-2 grid-rows-1 p-4 ">
       <div className="text-xl font-semibold">PShare</div>
       <div>
         {loading ? (
           <div className="h-5 w-40 bg-zinc-200 rounded animate-pulse" />
         ) : user ? (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-end gap-3">
             <span className="text-sm text-zinc-700">
               {possessive(user.username)} account
             </span>
+            <Link to="/add" className="text-sm font-medium hover:underline">
+              Add
+            </Link>
+            <Link to="/feed" className="text-sm font-medium hover:underline">
+              Home
+            </Link>
             <button
-              onClick={ async () => {
+              onClick={async () => {
                 await logout();
-                navigate("/", { replace: true }); // go back hopme after logging out
+                navigate("/", { replace: true });
               }}
               className="rounded px-3 py-1 bg-zinc-900 text-white"
             >
               Log out
             </button>
+          
           </div>
+
+
+
         ) : (
-          <a href="/" className="rounded px-3 py-1 bg-zinc-900 text-white">
-            Sign in
-          </a>
+          <div className="flex justify-end">
+            
+          <Link to="/?auth=login" className=" rounded px-3 py-1 bg-zinc-900 text-white ">
+            Sign In
+          </Link>
+          </div>
+          
         )}
       </div>
     </header>

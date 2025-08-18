@@ -11,10 +11,18 @@ import About from "./src/components/Pages/About.jsx";
 import { useAuth } from "./contexts/AuthContext.jsx";
 import { api } from "./utils/api.js";
 
+function RequireAuth({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null; // or a spinner
+  return user ? children : <Navigate to="/?auth=login" replace />;
+}
+
 export default function App() {
   const { user, loading } = useAuth();       // hook 1
   const [allData, setAllData] = useState(""); // hook 2
 
+  console.log("user = ", user);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,7 +41,6 @@ export default function App() {
     <Router>
       <div className="h-full grid grid-cols-2 col-span-2 grid-rows-[80px_1fr_60px] bg-[#F2EFE7]">
         <Header />
-        {user && <Navbar />}
         <Routes>
           <Route path="/" element={<div className="h-full flex flex-wrap justify-center col-span-2"><LandingPage /></div>}/>
           <Route path="/feed" element={<div className=" flex flex-wrap justify-center col-span-2"><Feed /></div>}/>

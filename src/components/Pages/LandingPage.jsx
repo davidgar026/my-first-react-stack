@@ -1,20 +1,40 @@
 import React, { useState, useEffect } from "react";
 import Login from "../Login";
 import Signup from "../Signup";
-import { useNavigate } from "react-router-dom";
-import { api } from "../../../utils/api.js";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 
 function LandingPage() {
-  const [userCredentials, setUserCredentials] = useState(null);
   const [divID, setDivID] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const { login, signup, user } = useAuth(); // <-- use context
+  const location = useLocation();
+  const { login, signup, user, loading, logout } = useAuth(); // <-- use context
+
+
+  // Redirect signed-in users to /feed
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/feed", { replace: true });
+    }
+  }, [loading, user, navigate]);
 
   useEffect(() => {
-  if (user) navigate("/feed", { replace: true });
-}, [user, navigate]);
+    if (loading) return; // wait for auth bootstrap
+    // Do not redirect automatically
+    // if (user) navigate("/feed", { replace: true });
+    // if there's no user, do nothing (stay on Landing)
+  }, [loading]);
+
+  // Open login modal if ?auth=login is present and user is not signed in
+  useEffect(() => {
+    if (!loading && !user) {
+      const params = new URLSearchParams(location.search);
+      if (params.get("auth") === "login") {
+        handleClick("div 1");
+      }
+    }
+  }, [location.search, loading, user]);
 
   
 
@@ -31,34 +51,6 @@ function LandingPage() {
   setShowModal(true);
   setDivID(name); // 'div 1' for login, 'div 2' for signup
 };
-
-  // const handleFormSubmit = async (credentials) => {
-    
-  //   try {
-  //     //decide which modal is currently open
-  //     const mode = divID === "div 1" ? "login" : "signup";
-  //     const endpoint = mode === "login" ? "/auth/login" : "/auth/signup";
-  //     const { data } = await api.post(endpoint, credentials, {
-  //       withCredentials: true,
-  //     });
-
-  //     setUserCredentials(credentials);
-  //     setShowModal(false);
-  //     setDivID(null);
-
-  //     navigate("/feed");
-  //   } catch (err) {
-  //     console.error("[ AUTH ERR ]", {
-  //       status: err.response?.status,
-  //       data: err.response?.data,
-  //     });
-  //     alert(
-  //       err.response?.data?.error ||
-  //         err.response?.data?.message ||
-  //         "Authentication failed."
-  //     );
-  //   }
-  // };
 
   const handleFormSubmit = async (credentials) => {
     try {
@@ -81,7 +73,7 @@ function LandingPage() {
   };
 
   return (
-    <div className=" ">
+    <div className="">
       {/* border-red-500 border-8 */}
       <div id="modalBackdrop" className="flex justify-center items-center  h-full ">
         <div id="modalContent" className="h-max w-[40%] shadow-xl rounded-md p-15">

@@ -5,17 +5,16 @@ import ImagePreview from "./ImagePreview";
 import Post from "./Post";
 import { api } from "../../../utils/api.js";
 import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";  
 
 
 
 
 function Feed() {
-  const { accessToken } = useAuth();
   const [posts, setPosts] = useState([]);
   const [allData, setAllData] = useState([]);
   const [file, setFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: "",
     user: "",
@@ -25,7 +24,13 @@ function Feed() {
   const [ showModal, setShowModal ] = useState(false);
   const [ divID, setDivID ] = useState(null)
   const navigate = useNavigate();
-  const { user } = useAuth();
+ const { user, loading, accessToken } = useAuth();
+
+  // Don't do anything until auth finishes bootstrapping
+  if (loading) return null;          // or a spinner
+
+  // After loading, enforce auth
+  if (!user) return <Navigate to="/?auth=login" replace />;
 
 
 

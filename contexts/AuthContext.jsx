@@ -10,21 +10,22 @@ export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // On app load, try refresh (httpOnly cookie) then /me
-  useEffect(() => {
-    (async () => {
-      try {
-        const r = await api.post("/auth/refresh");
-        setApiAccessToken(r.data.accessToken);
-        const me = await api.get("/auth/me");
-        setUser(me.data.user);
-      } catch {
-        setApiAccessToken(null);
-        setUser(null);
-      } finally {
-        setLoading(false);
+ useEffect(() => {
+  let cancelled = false;
+  (async () => {
+    try {
+      const { data } = await api.post("/auth/refresh"); // httpOnly cookie
+      if (!cancelled) {
+        setUser({ id: data.user.id, username: data.user.username });
       }
-    })();
-  }, []);
+    } catch (err) {
+      if (!cancelled) setUser(null); // <— important
+    } finally {
+      if (!cancelled) setLoading(false); // <— important
+    }
+  })();
+  return () => { cancelled = true; };
+}, []);
 
   const login = async (creds) => {
     const { data } = await api.post("/auth/login", creds);
