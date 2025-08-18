@@ -2,7 +2,7 @@ import React from "react";
 
 
 function EditButton(){
- return <button>Edit</button>
+ return <button className="">Edit</button>
 
 }
 

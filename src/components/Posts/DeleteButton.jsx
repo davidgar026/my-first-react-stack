@@ -2,7 +2,7 @@ import React from "react";
 
 
 function DeleteButton(){
- return <button>Delete</button>
+ return <button className="">Delete</button>
 }
 
 export default DeleteButton

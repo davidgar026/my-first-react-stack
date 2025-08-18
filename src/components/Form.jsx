@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import ImagePreview from "./ImagePreview";
-import Post from "./Post";
+import ImagePreview from "./Posts/ImagePreview";
+import Post from "./Posts/Post";
 
 function Form() {
 //   const [allData, setAllData] = useState([]);
@@ -23,20 +23,6 @@ function Form() {
       [e.target.name]: e.target.value,
     });
   };
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const response = await axios.get("http://localhost:4000/api/getData");
-//         setAllData(response.data);
-//         setLoading(false);
-//       } catch (err) {
-//         throw err;
-//       }
-//     };
-
-//     fetchData();
-//   }, []);
 
   async function handleFileInput(e) {
     const fileInput = e.target.files[0]; //capture user's file input
@@ -64,24 +50,18 @@ function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // this prevents the page from loading after user submits. I took this out so that I can intentionally have the page refresh.
-
     const uploadData = new FormData();
-
     uploadData.append("title", formData.title);
     uploadData.append("description", formData.text);
     uploadData.append("user", formData.user);
-    uploadData.append("file", file); // assuming you saved it in useState
-    console.log("uploadData = ", uploadData);
+    if (file) uploadData.append("file", file); // assuming you saved it in useState
+    
 
     try {
-      const res = await axios.post(
-        "http://localhost:4000/api/submit",
-        uploadData
-      );
+      const res = await axios.post("/api/submit",uploadData);
       console.log("data has been submitted: ", res.data);
         //window.location.reload();
-        navigate("/");
-
+        navigate("/feed");
       // console.log("Response data sent succesfully!", response.data)
     } catch (error) {
       console.log("Unable to send data due to error: ", error);

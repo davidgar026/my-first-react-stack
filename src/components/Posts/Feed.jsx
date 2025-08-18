@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth } from "../../../contexts/AuthContext.jsx";
 import ImagePreview from "./ImagePreview";
 import Post from "./Post";
+import { api } from "../../../utils/api.js";
+import { useNavigate } from "react-router-dom";
 
-function Content() {
+
+
+
+function Feed() {
+  const { accessToken } = useAuth();
+  const [posts, setPosts] = useState([]);
   const [allData, setAllData] = useState([]);
   const [file, setFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -14,6 +22,41 @@ function Content() {
     text: "",
     img_path: null,
   });
+  const [ showModal, setShowModal ] = useState(false);
+  const [ divID, setDivID ] = useState(null)
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+
+
+  const closeModal = () => {
+    setShowModal(false);
+    setDivID(null);
+  };
+
+  const handleClick = ( name ) => {
+    setShowModal(true);
+    setDivID(name);
+  }
+
+  const handleClose = () => {
+    setShowModal(false);
+    setDivID(null);
+
+  }
+
+ useEffect(() => {
+  const getPosts = async () => {
+    try {
+      const res = await api.get("/posts"); // header is already set by AuthContext
+      setPosts(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (accessToken) getPosts();
+}, [accessToken]);
 
   const handleChange = (e) => {
     setFormData({
@@ -73,7 +116,7 @@ function Content() {
 
     try {
       const res = await axios.post(
-        "http://localhost:4000/api/submit",
+        "/api/submit",
         uploadData
       );
       console.log("data has been submitted: ", res.data);
@@ -85,8 +128,19 @@ function Content() {
     }
   };
 
+  if(!user){
+    return <Navigate to="/" replace />
+  }
+  
+
   return (
-    <div className="flex flex-col  mt-[60px] items-center justify-center ">
+    <div className="columns-3 gap-3 p-[1rem]"> 
+
+
+    {/* this is what makes this page look like tumblr layout or more appropriately, masonry layout */}
+
+      {/* this was previously in className for the above div: 
+      flex flex-col mt-[60px] items-center justify-center */}
 
       {/* I got rid of the flash for when the default form was showing by allowing loading state to determine whether there is data already then show the posts. Whenever the user refreshes the page, the default form wont show unless there is no posts inputted. If there is then it would show the form to input data. */}
       {loading ? (
@@ -94,6 +148,7 @@ function Content() {
       ) : allData.length > 0 ? (
         allData.map((item, index) => (
           <Post
+          
             key={index}
             title={item.title}
             user={item.usernames}
@@ -103,7 +158,17 @@ function Content() {
           />
         ))
       ) : (
-        <form
+        <div>No posts yet.</div>
+      )}
+
+      {showModal && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={handleClose}
+          >
+          <div onClick={(e) => e.stopPropagation() }>
+            {/* prevents from closing modal from clicking inside */}
+            <form
           onSubmit={handleSubmit}
           className="flex items-center gap-[20px] "
           style={{ visibility: allData.length == 0 ? "visible" : "hidden" }}
@@ -175,9 +240,15 @@ function Content() {
             </div>
           </div>
         </form>
+          </div>
+        </div>
       )}
+
+
+
+
     </div>
   );
 }
 
-export default Content;
+export default Feed;
