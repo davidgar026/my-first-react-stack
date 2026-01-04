@@ -1,8 +1,4 @@
 {
-<<<<<<< HEAD
-  "dependencies": {
-    "mongoose": "^8.15.1"
-=======
   "name": "client",
   "private": true,
   "version": "0.0.0",
@@ -35,6 +31,6 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "vite": "^7.0.5"
->>>>>>> 0ca00da0265176cf53bdf528a7e5e0a981dffd9f
+
   }
 }
