@@ -1,0 +1,11 @@
+@import url(https://fonts.googleapis.com/css?family=Bangers);
+@import "tailwindcss";
+
+
+
+html, 
+body,
+#root{
+    height:100%;
+}
+
