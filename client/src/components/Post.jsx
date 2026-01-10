@@ -13,9 +13,9 @@ function Post(props) {
             id="image_preview"
             src={`http://localhost:4000/uploads/${props.img_pth}`}
             alt="User's inputted image"
-        />
+      />
 
-        <p>{`http://localhost:4000/uploads/${props.img_pth}`}</p>
+      <p>{`http://localhost:4000/uploads/${props.img_pth}`}</p>
     </div>
   );
 }

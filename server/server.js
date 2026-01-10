@@ -69,9 +69,6 @@ app.get("/api/ai/ping", async (req, res) => {
 });
 
 
-
-
-
 //Generate a post using AI
 app.post("/api/ai/generate-post", async (req, res) => {
   try{
@@ -125,8 +122,6 @@ app.post("/api/ai/generate-post", async (req, res) => {
     return res.status(500).json( { ok: false, error: "Failed to generate post" });
   }
 });
-
-
 
 
 // Multer used for file uploads

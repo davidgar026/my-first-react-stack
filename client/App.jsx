@@ -86,7 +86,7 @@ export default function App() {
           <Route
             path="/"
             element={
-              <div className="flex-wrap justify-center">
+              <div className="flex-wrap justify-center ">
                 <LandingPage
                   handleClick={handleClick}
                   showModal={showModal}
