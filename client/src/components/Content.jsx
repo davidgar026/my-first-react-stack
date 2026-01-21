@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { api } from "../../utils/api";
 import ImagePreview from "./ImagePreview";
 import Post from "./Post";
 
@@ -42,11 +42,9 @@ function Content() {
 console.log("uploadData = ", uploadData)
 
     try{
-      await axios.post('http://localhost:4000/api/submit', uploadData,{
+      await api.post('/submit', uploadData,{
         headers: { 'Content-Type': 'multipart/form-data' }
-      }
-        
-      );
+      });
       // console.log("Response data sent succesfully!", response.data)
     }catch(error){
       console.log("Unable to send data due to error: ", error)
@@ -56,7 +54,7 @@ console.log("uploadData = ", uploadData)
   useEffect(() => {
       const fetchData = async() => {
         try{
-          const response = await axios.get("http://localhost:4000/api/getData");
+          const response = await api.get("/getData");
           setAllData(response.data)
         }catch(err){
           throw err

@@ -17,7 +17,7 @@ import { openai } from "./utils/aiClient.js"
 dotenv.config();
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -29,10 +29,14 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use("/api/posts", postsRoutes);
 
+const allowedOrigins = [process.env.CLIENT_ORIGIN, "http://localhost:5173"].filter(Boolean);
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true, //allows cookies over CORS
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
   })
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

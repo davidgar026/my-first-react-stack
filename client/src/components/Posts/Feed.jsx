@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
 import ImagePreview from "./ImagePreview";
 import Post from "./Post";
@@ -51,7 +51,7 @@ function Feed({ showAddModal, handleClose, handleFormSubmit }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/getData");
+        const response = await api.get("/getData");
         setAllData(response.data);
         // setLoading(false); // removed, loading comes from useAuth
       } catch (err) {

@@ -1,8 +1,9 @@
 import axios from "axios";
 
+const baseURL = import.meta.env.VITE_API_BASE_URL || "/api";
 export const api = axios.create({
-  baseURL: "/api",
-  withCredentials: true, // important. needed to send/receive the HTTP-only cookie
+  baseURL,
+  withCredentials: true,
 });
 
 let accessToken = null;

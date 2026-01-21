@@ -4,6 +4,8 @@ import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
 
 
+const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/api$/, '') || "http://localhost:4000";
+
 function Post({ id, handleDeleteInParent, user, title, image_path, text, data, currentUser, handleEditInParent }) {
 
   console.log("username = ", currentUser.username)
@@ -23,7 +25,7 @@ function Post({ id, handleDeleteInParent, user, title, image_path, text, data, c
           <img
               className="rounded-[2px]  object-cover"
               id="image_preview"
-              src={`http://localhost:4000/uploads/${image_path}`}
+              src={`${apiBase}/uploads/${image_path}`}
               alt="User's inputted image"
             />
             <div className=" grid grid-cols-2 justify-end ">

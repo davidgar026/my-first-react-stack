@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { api } from "../../utils/api";
 import ImagePreview from "./Posts/ImagePreview";
 import Post from "./Posts/Post";
 
@@ -31,16 +31,17 @@ function Form({ onClose, currentUser, updatePosts, post, isEdit }) {
   }
 }, [currentUser]);
 
+const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/api$/, '') || "http://localhost:4000";
   useEffect(() => {
     if(isEdit && post && post.image_path){
-      setSelectedImage(`http://localhost:4000/uploads/${post.image_path}`);
+      setSelectedImage(`${apiBase}/uploads/${post.image_path}`);
       setFormData({
         title: post.title || "",
         user: post.user || "",
         text: post.text || "",
         image_path: post.image_path || null,
       });
-      setSelectedImage(post.image_path ? `http://localhost:4000/uploads/${post.image_path}` : null);
+      setSelectedImage(post.image_path ? `${apiBase}/uploads/${post.image_path}` : null);
     }
   }, [isEdit, post])
 
@@ -101,15 +102,15 @@ function Form({ onClose, currentUser, updatePosts, post, isEdit }) {
       console.log("post = ", post)
       if(isEdit && post){
         //updates existing post
-        res = await axios.patch(`/api/posts/${post.id}`, uploadData);
+        res = await api.patch(`/posts/${post.id}`, uploadData);
       }else{
         //creates new post
-        res = await axios.post(`/api/submit`, uploadData);
+        res = await api.post(`/submit`, uploadData);
       }
 
       // refresh posts via parent callback (preferred) and close modal
       if (updatePosts) {
-        const postsRes = await axios.get("/api/getData");
+        const postsRes = await api.get("/getData");
         updatePosts(postsRes.data);
       }
 
@@ -126,7 +127,7 @@ function Form({ onClose, currentUser, updatePosts, post, isEdit }) {
       setAiLoading(true);
       setAiError("");
 
-      const res = await axios.post("http://localhost:4000/api/ai/generate-post",{
+      const res = await api.post("/ai/generate-post",{
         prompt: aiIdea,
         tone: "tumblr",
         maxWords: 100,

@@ -3,14 +3,21 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// configuration for connecting to DB
-const pool = new pg.Pool({
-  user:"postgres",
-  password: process.env.DB_PASS,
-  database: "pshare",
-  host:'localhost',
-  port: 5432
-});
+const isProd = process.env.NODE_ENV === "production";
+const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+const pool = databaseUrl
+  ? new pg.Pool({
+      connectionString: databaseUrl,
+      ssl: isProd ? { rejectUnauthorized: false } : false,
+    })
+  : new pg.Pool({
+      user: process.env.DB_USER || "postgres",
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME || "pshare",
+      host: process.env.DB_HOST || "localhost",
+      port: Number(process.env.DB_PORT || 5432),
+    });
 
 // capture all data from DB
 export const getAllData = async () => {
