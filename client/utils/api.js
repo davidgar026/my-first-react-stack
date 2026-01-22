@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || "/api";
+const baseURL = "https://my-first-react-stack-production.up.railway.app/api";
 export const api = axios.create({
   baseURL,
   withCredentials: true,
