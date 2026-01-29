@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const baseURL = "https://my-first-react-stack-production.up.railway.app/api";
 export const api = axios.create({
-  baseURL,
-  withCredentials: true,
+  baseURL: "/api",
+  withCredentials: true, // important. needed to send/receive the HTTP-only cookie
 });
 
 let accessToken = null;
