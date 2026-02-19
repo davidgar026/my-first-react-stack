@@ -50,6 +50,8 @@ app.use(cors({
   credentials: true,
 }));
 
+app.options("*", cors());
+
 
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
