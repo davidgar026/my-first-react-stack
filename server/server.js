@@ -27,26 +27,31 @@ console.log(path.join(__dirname, "uploads"));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use("/api/posts", postsRoutes);
 
-app.get("/", (req, res) => res.send("Backend is running"));
-app.get("/health", (req, res) => res.send("ok"));
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN,
+  "http://localhost:5173",
+].filter(Boolean);
 
-const allowedOrigins = [process.env.CLIENT_ORIGIN, "http://localhost:5173"].filter(Boolean);
-app.use(
-  cors({
-    // origin: (origin, callback) => {
-    //   if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    //   return callback(new Error("Not allowed by CORS"));
-    // },
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(null, false); // don't throw
-    },
-    credentials: true,
-  })
-);
+const originRegex = process.env.CLIENT_ORIGIN_REGEX
+  ? new RegExp(process.env.CLIENT_ORIGIN_REGEX)
+  : null;
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // allow curl / health checks
+
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+
+    if (originRegex && originRegex.test(origin)) return cb(null, true);
+
+    return cb(null, false);
+  },
+  credentials: true,
+}));
+
+
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 
