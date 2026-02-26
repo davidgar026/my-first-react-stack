@@ -28,6 +28,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+
 const allowedOrigins = [
   process.env.CLIENT_ORIGIN,
   "http://localhost:5173",
@@ -52,10 +53,13 @@ app.use(cors({
 
 app.options("*", cors());
 
-
+app.get("/", (req, res) => res.send("ok"));
+app.get("/health", (req, res) => res.send("ok"));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
+
+
 
 
 //A simple test to ensure API key works and were hitting the openai server
@@ -244,6 +248,10 @@ app.patch("/api/posts/:id", upload.single("file"), async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+// app.listen(port, () => {
+//   console.log(`Server listening on port ${port}`);
+// });
+
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server listening on port ${port}`);
 });
