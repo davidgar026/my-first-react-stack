@@ -53,6 +53,11 @@ app.use(cors({
 
 app.options("*", cors());
 
+app.use((req, res, next) => {
+  console.log("REQ:", req.method, req.url);
+  next();
+});
+
 app.get("/", (req, res) => res.send("ok"));
 app.get("/health", (req, res) => res.send("ok"));
 
@@ -247,6 +252,8 @@ app.patch("/api/posts/:id", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Failed to update post. "});
   }
 });
+
+
 
 // app.listen(port, () => {
 //   console.log(`Server listening on port ${port}`);
