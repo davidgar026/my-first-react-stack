@@ -38,28 +38,26 @@ const originRegex = process.env.CLIENT_ORIGIN_REGEX
   ? new RegExp(process.env.CLIENT_ORIGIN_REGEX)
   : null;
 
-app.use(cors({
+  const corsOptions = {
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // allow curl / health checks
-
+    if (!origin) return cb(null, true); // health checks / curl / same-origin tools
     if (allowedOrigins.includes(origin)) return cb(null, true);
-
     if (originRegex && originRegex.test(origin)) return cb(null, true);
-
-    return cb(null, false);
+    return cb(new Error(`CORS blocked: ${origin}`));
   },
   credentials: true,
-}));
+};
 
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions)); //preflight uses same policy
 
 app.use((req, res, next) => {
-  console.log("REQ:", req.method, req.url);
+  console.log("REQ:", req.method, req.url, "Origin", req.headers.origin || "none");
   next();
 });
 
-app.get("/", (req, res) => res.send("ok"));
-app.get("/health", (req, res) => res.send("ok"));
+app.get("/", (req, res) => res.status(200).send("ok"));
+app.get("/health", (req, res) => res.status(200).send("ok"));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
@@ -170,7 +168,8 @@ app.get("/api/getData", async (req, res) => {
     const posts = await getAllData();
     res.json(posts);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch data." });
+    console.error("GET /api/getData error:", error?.message, error);
+    res.status(500).json({ error: "Failed to fetch data.", details: error?.message });
   }
 });
 

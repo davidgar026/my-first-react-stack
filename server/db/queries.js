@@ -6,6 +6,10 @@ dotenv.config();
 const isProd = process.env.NODE_ENV === "production";
 const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
+if (isProd && !databaseUrl) {
+  throw new Error("DATABASE_URL/POSTGRES_URL is missing in production");
+}
+
 const pool = databaseUrl
   ? new pg.Pool({
       connectionString: databaseUrl,
@@ -20,10 +24,16 @@ const pool = databaseUrl
     });
 
 // capture all data from DB
+
+// export const getAllData = async () => {
+//   const result = await pool.query("SELECT * FROM posts ORDER BY created_at ASC");
+//   return result.rows;
+// }
 export const getAllData = async () => {
-  const result = await pool.query("SELECT * FROM posts ORDER BY created_at ASC");
+  const result = await pool.query("SELECT * FROM posts ORDER BY id ASC");
   return result.rows;
-}
+};
+
 // insert a new post
  export const insertPost = async ( user, DataTransferItemList, RTCSessionDescription, filename ) => {
   const result = await pool.query(`
